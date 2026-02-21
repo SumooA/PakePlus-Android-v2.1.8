@@ -1,0 +1,21 @@
+{
+  "name": "Sumoo's Plan List",
+  "version": "1.0.0",
+  "description": "多维度计划清单管理应用",
+  "author": "Sumoo",
+  "package": "com.sumoo.planlist",
+  "icon": "icon.png",
+  "splash": "splash.png",
+  "orientation": "portrait",
+  "permissions": [
+    "INTERNET",
+    "ACCESS_NETWORK_STATE"
+  ],
+  "index": "isolated-data-index.html",
+  "build": {
+    "android": {
+      "minSdkVersion": 19,
+      "targetSdkVersion": 30
+    }
+  }
+}
