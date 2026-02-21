@@ -1,11 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus</title>
-    </head>
-    <body>
-        PakePlus
-    </body>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumoo's Plan List</title>
+    <link rel="stylesheet" href="isolated-data-style.css">
+    
+    <!-- PWA支持 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="计划清单">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="app-header">
+            <h1>Sumoo's Plan List</h1>
+            <div class="time-dimension-selector">
+                <button class="dimension-btn active" data-dimension="day">日视图</button>
+                <button class="dimension-btn" data-dimension="month">月视图</button>
+                <button class="dimension-btn" data-dimension="year">年视图</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧统计区域（根据视图动态显示） -->
+            <aside class="sidebar" id="sidebar">
+                <!-- 日视图：显示日历和统计 -->
+                <div class="day-view-sidebar">
+                    <!-- 日历组件 -->
+                    <div class="calendar-section">
+                        <div class="calendar-header">
+                            <button class="nav-btn" id="prevMonth">‹</button>
+                            <h3 id="currentMonth">2024年2月</h3>
+                            <button class="nav-btn" id="nextMonth">›</button>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid"></div>
+                    </div>
+
+                    <!-- 统计面板 -->
+                    <div class="stats-section">
+                        <h3>统计概览</h3>
+                        
+                        <!-- 每日统计 -->
+                        <div class="daily-stats">
+                            <h4>今日完成进度</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="dailyProgress"></div>
+                            </div>
+                            <div class="progress-text" id="dailyProgressText">0/0 (0%)</div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- 月视图：显示月份表格和统计 -->
+                <div class="month-view-sidebar">
+                    <!-- 月份表格 -->
+                    <div class="month-grid-section">
+                        <h3>月份选择</h3>
+                        <div class="month-grid" id="monthGrid">
+                            <!-- 动态生成1-12月表格 -->
+                        </div>
+                    </div>
+
+                    <!-- 统计面板 -->
+                    <div class="stats-section">
+                        <h3>本月统计概览</h3>
+                        
+                        <!-- 月度统计 -->
+                        <div class="monthly-stats">
+                            <h4>本月完成进度</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="monthlyProgress"></div>
+                            </div>
+                            <div class="progress-text" id="monthlyProgressText">0/0 (0%)</div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- 年视图：显示年度排名和筛选 -->
+                <div class="year-view-sidebar">
+                    <!-- 统计面板 -->
+                    <div class="stats-section">
+                        <h3>年度任务分析</h3>
+                        
+                        <!-- 年度排名 -->
+                        <div class="yearly-stats">
+                            <h4>年度任务频次排名</h4>
+                            <div id="yearlyTaskStats">
+                                <!-- 动态生成年度任务频次排名 -->
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 右侧主内容区域 -->
+            <main class="content-area">
+                <!-- 任务管理区域 -->
+                <section class="task-management">
+                    <div class="task-input-section">
+                        <input type="text" id="taskInput" placeholder="输入新任务..." maxlength="100">
+                        <button id="addTaskBtn" class="primary-btn">添加任务</button>
+                    </div>
+                    
+                    <div class="task-list-section">
+                        <div class="section-header">
+                            <h2 id="currentDateTitle">今日任务</h2>
+                            <div class="task-count">
+                                <span id="completedCount">0</span>/<span id="totalCount">0</span>
+                            </div>
+                        </div>
+                        <div id="taskList" class="task-list"></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- 任务详情模态框 -->
+    <div id="taskDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>任务详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="taskDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmMessage">确定要删除这个任务吗？此操作不可撤销。</p>
+                <div class="modal-actions">
+                    <button id="confirmDeleteBtn" class="danger-btn">确认删除</button>
+                    <button id="cancelDeleteBtn" class="secondary-btn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="isolated-data-database.js"></script>
+    <script src="isolated-data-app.js"></script>
+</body>
 </html>
